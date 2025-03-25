@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "ravenna"
+version = "0.0.9999"
+description = "SInteract with high-resolution, long-term acoustic data"
+authors = ["Max Czapanskiy"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
