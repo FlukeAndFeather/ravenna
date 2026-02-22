@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import math
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -27,7 +28,7 @@ class PipelineConfig:
     tile_size: int = 256      # pixels; applied to both axes
     zoom_t_min: int = 0       # coarsest time zoom level
     zoom_t_max: int = 12      # finest time zoom level
-    zoom_f_min: int = 0       # coarsest frequency zoom level
+    zoom_f_min: int | None = None  # coarsest freq zoom level; None → auto-compute
     zoom_f_max: int = 6       # finest frequency zoom level
     downsample_method: str = "mean"   # 'mean' or 'max'
 
@@ -50,6 +51,14 @@ class PipelineConfig:
     # ── Compute ───────────────────────────────────────────────────────────
     n_workers: int = 16
     chunk_size_frames: int = 4096
+
+    def __post_init__(self) -> None:
+        if self.zoom_f_min is None:
+            # Coarsest useful level: where the whole spectrum fills ~1 tile.
+            # bpp = 2^(zoom_f_max - zoom_f_min), so we want bpp ≈ n_freq_bins / tile_size.
+            n_freq_bins = self.fft_size // 2 + 1
+            steps = math.floor(math.log2(max(1, n_freq_bins / self.tile_size)))
+            self.zoom_f_min = max(0, self.zoom_f_max - steps)
 
     def to_json(self) -> str:
         d = dataclasses.asdict(self)

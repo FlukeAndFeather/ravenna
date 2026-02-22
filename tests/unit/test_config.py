@@ -48,7 +48,8 @@ def test_default_values(minimal_config):
     assert minimal_config.tile_size == 256
     assert minimal_config.zoom_t_min == 0
     assert minimal_config.zoom_t_max == 12
-    assert minimal_config.zoom_f_min == 0
+    # fft_size=512 → n_freq_bins=257 ≈ tile_size=256 → only 1 freq zoom level makes sense
+    assert minimal_config.zoom_f_min == 6
     assert minimal_config.zoom_f_max == 6
     assert minimal_config.downsample_method == "mean"
     assert minimal_config.norm_strategy == "global_percentile"

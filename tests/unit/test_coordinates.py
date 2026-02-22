@@ -96,21 +96,50 @@ def test_freq_increases_with_y(tc):
 # ── Zoom level coarsening — time ──────────────────────────────────────────
 
 def test_coarser_z_t_covers_more_time(tc):
-    """Each step down in z_t doubles the time covered by a tile."""
+    """Each step down in z_t doubles the time per tile (when both tiles fit)."""
     for z_t in range(1, ZOOM_T_MAX + 1):
+        fpp_coarse = 2 ** (ZOOM_T_MAX - (z_t - 1))
+        if TILE_SIZE * fpp_coarse > N_TIME_FRAMES:
+            continue   # coarse tile extends past data end → clamped, skip
         _, end_fine = tc.tile_to_time_range(z_t, 0)
         _, end_coarse = tc.tile_to_time_range(z_t - 1, 0)
         assert end_coarse == pytest.approx(end_fine * 2)
 
 
+def test_time_range_never_exceeds_recording(tc):
+    """end_sec must never exceed the recording duration."""
+    max_sec = N_TIME_FRAMES * HOP_SIZE / SAMPLE_RATE
+    for z_t in range(ZOOM_T_MAX + 1):
+        ext = tc.tile_extent(z_t, 0)
+        for x in range(ext.n_x):
+            _, end_sec = tc.tile_to_time_range(z_t, x)
+            assert end_sec <= max_sec + 1e-9
+
+
 # ── Zoom level coarsening — frequency ────────────────────────────────────
 
 def test_coarser_z_f_covers_more_freq(tc):
-    """Each step down in z_f doubles the frequency range covered by a tile."""
+    """Each step down in z_f doubles the freq range per tile (when both fit)."""
+    n_freq_bins = FFT_SIZE // 2 + 1
     for z_f in range(1, ZOOM_F_MAX + 1):
+        bpp_coarse = 2 ** (ZOOM_F_MAX - (z_f - 1))
+        if TILE_SIZE * bpp_coarse > n_freq_bins:
+            continue   # coarse tile extends past Nyquist → clamped, skip
         _, high_fine = tc.tile_to_freq_range(z_f, 0)
         _, high_coarse = tc.tile_to_freq_range(z_f - 1, 0)
         assert high_coarse == pytest.approx(high_fine * 2)
+
+
+def test_freq_range_never_exceeds_nyquist(tc):
+    """high_hz must never exceed n_freq_bins * hz_per_bin."""
+    n_freq_bins = FFT_SIZE // 2 + 1
+    hz_per_bin = SAMPLE_RATE / FFT_SIZE
+    max_hz = n_freq_bins * hz_per_bin
+    for z_f in range(ZOOM_F_MAX + 1):
+        ext = tc.tile_extent(0, z_f)
+        for y in range(ext.n_y):
+            _, high_hz = tc.tile_to_freq_range(z_f, y)
+            assert high_hz <= max_hz + 1e-9
 
 
 # ── tile_extent ───────────────────────────────────────────────────────────

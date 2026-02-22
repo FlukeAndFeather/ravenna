@@ -96,7 +96,7 @@ class TileCoordinates:
         """Return (start_sec, end_sec) for tile column x at time zoom level z_t."""
         fpp = self._frames_per_pixel(z_t)
         start_frame = x * self.tile_size * fpp
-        end_frame = (x + 1) * self.tile_size * fpp
+        end_frame = min((x + 1) * self.tile_size * fpp, self.n_time_frames)
         sec_per_frame = self.hop_size / self.sample_rate
         return start_frame * sec_per_frame, end_frame * sec_per_frame
 
@@ -104,7 +104,7 @@ class TileCoordinates:
         """Return (low_hz, high_hz) for tile row y at frequency zoom level z_f."""
         bpp = self._bins_per_pixel(z_f)
         low_bin = y * self.tile_size * bpp
-        high_bin = (y + 1) * self.tile_size * bpp
+        high_bin = min((y + 1) * self.tile_size * bpp, self.n_freq_bins)
         hz_per_bin = self.sample_rate / self.fft_size
         return low_bin * hz_per_bin, high_bin * hz_per_bin
 
