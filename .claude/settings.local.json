@@ -8,7 +8,8 @@
       "Bash(git commit:*)",
       "Bash(gh repo create:*)",
       "Bash(gh issue create:*)",
-      "Bash(gh issue view:*)"
+      "Bash(gh issue view:*)",
+      "Bash(.venv/bin/pytest:*)"
     ]
   }
 }

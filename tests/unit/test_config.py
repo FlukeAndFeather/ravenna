@@ -36,7 +36,6 @@ def test_json_roundtrip_with_optional_fields():
         hydrophone_sensitivity_db=-168.0,
         spl_display_min_db=60.0,
         spl_display_max_db=130.0,
-        output_format="mbtiles",
         source_credentials={"profile": "my-aws-profile"},
     )
     assert PipelineConfig.from_json(config.to_json()) == config
@@ -47,14 +46,15 @@ def test_default_values(minimal_config):
     assert minimal_config.hop_size == 128
     assert minimal_config.window == "hann"
     assert minimal_config.tile_size == 256
-    assert minimal_config.zoom_min == 0
-    assert minimal_config.zoom_max == 12
+    assert minimal_config.zoom_t_min == 0
+    assert minimal_config.zoom_t_max == 12
+    assert minimal_config.zoom_f_min == 0
+    assert minimal_config.zoom_f_max == 6
     assert minimal_config.downsample_method == "mean"
     assert minimal_config.norm_strategy == "global_percentile"
     assert minimal_config.norm_low_pct == 1.0
     assert minimal_config.norm_high_pct == 99.5
     assert minimal_config.colormap == "viridis"
-    assert minimal_config.output_format == "pmtiles"
     assert minimal_config.n_workers == 16
     assert minimal_config.chunk_size_frames == 4096
     assert minimal_config.hydrophone_sensitivity_db is None

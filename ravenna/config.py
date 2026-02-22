@@ -23,8 +23,10 @@ class PipelineConfig:
 
     # ── Pyramid ───────────────────────────────────────────────────────────
     tile_size: int = 256      # pixels; applied to both axes
-    zoom_min: int = 0
-    zoom_max: int = 12
+    zoom_t_min: int = 0       # coarsest time zoom level
+    zoom_t_max: int = 12      # finest time zoom level
+    zoom_f_min: int = 0       # coarsest frequency zoom level
+    zoom_f_max: int = 6       # finest frequency zoom level
     downsample_method: str = "mean"   # 'mean' or 'max'
 
     # ── Normalization ─────────────────────────────────────────────────────
@@ -41,9 +43,7 @@ class PipelineConfig:
     # ── I/O paths ─────────────────────────────────────────────────────────
     zarr_path: str = "./zarr/full_res"
     pyramid_path: str = "./zarr/pyramid"
-    tiles_path: str = "./tiles"
-    output_path: str = "./output/spectrogram.pmtiles"
-    output_format: str = "pmtiles"   # 'pmtiles' or 'mbtiles'
+    tiles_path: str = "./output/tiles"   # root of flat tile tree: tiles/zt{}/zf{}/{x}/{y}.png
 
     # ── Compute ───────────────────────────────────────────────────────────
     n_workers: int = 16
