@@ -271,3 +271,76 @@ class TestIterChunks:
         # Gap samples are zeros
         for gc in gap_chunks:
             assert np.all(gc.samples == 0.0)
+
+
+# ── End-to-end filename format tests ─────────────────────────────────────
+
+# Three consecutive 10-minute files starting 2018-02-14 22:16:45 UTC.
+_MARS_T = [
+    datetime(2018, 2, 14, 22, 16, 45, tzinfo=timezone.utc),
+    datetime(2018, 2, 14, 22, 26, 45, tzinfo=timezone.utc),
+    datetime(2018, 2, 14, 22, 36, 45, tzinfo=timezone.utc),
+]
+_MARS_N = SR * 60 * 10   # 10 minutes of audio at the test sample rate
+
+
+def test_ingest_standard_mars_format(tmp_path):
+    """
+    Three WAV files named MARS_YYYYMMDD_HHMMSS.wav (real MARS convention).
+    Verify count, start times, and sample counts.
+    """
+    names = [
+        "MARS_20180214_221645.wav",
+        "MARS_20180214_222645.wav",
+        "MARS_20180214_223645.wav",
+    ]
+    for name in names:
+        _write_wav(tmp_path / name, _MARS_N)
+
+    cfg = PipelineConfig(
+        source_uri=str(tmp_path),
+        date_start=_MARS_T[0],
+        date_end=datetime(2018, 2, 14, 23, 0, 0, tzinfo=timezone.utc),
+        sample_rate=SR,
+        file_pattern="*.wav",
+        filename_timestamp_format="MARS_%Y%m%d_%H%M%S",
+    )
+
+    files = FilesystemIngester(cfg).list_files()
+
+    assert len(files) == 3
+    assert files[0].start_time == _MARS_T[0]
+    assert files[1].start_time == _MARS_T[1]
+    assert files[2].start_time == _MARS_T[2]
+    assert all(f.n_samples == _MARS_N for f in files)
+
+
+def test_ingest_m_d_y_h_m_s_format(tmp_path):
+    """
+    Three WAV files named MM-DD-YYYY-HH-MM-SS.wav (custom format).
+    Verify count, start times, and sample counts.
+    """
+    names = [
+        "02-14-2018-22-16-45.wav",
+        "02-14-2018-22-26-45.wav",
+        "02-14-2018-22-36-45.wav",
+    ]
+    for name in names:
+        _write_wav(tmp_path / name, _MARS_N)
+
+    cfg = PipelineConfig(
+        source_uri=str(tmp_path),
+        date_start=_MARS_T[0],
+        date_end=datetime(2018, 2, 14, 23, 0, 0, tzinfo=timezone.utc),
+        sample_rate=SR,
+        file_pattern="*.wav",
+        filename_timestamp_format="%m-%d-%Y-%H-%M-%S",
+    )
+
+    files = FilesystemIngester(cfg).list_files()
+
+    assert len(files) == 3
+    assert files[0].start_time == _MARS_T[0]
+    assert files[1].start_time == _MARS_T[1]
+    assert files[2].start_time == _MARS_T[2]
+    assert all(f.n_samples == _MARS_N for f in files)
