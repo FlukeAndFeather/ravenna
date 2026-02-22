@@ -14,6 +14,8 @@ class PipelineConfig:
     date_end: datetime        # exclusive; UTC
     sample_rate: int          # Hz; must match source audio
     file_pattern: str = "*.wav"                  # glob pattern for audio filenames
+    filename_timestamp_format: str | None = None # strptime format applied to filename stem;
+                                                 # None → regex for YYYYMMDDTHHMMSS
     source_credentials: dict = field(default_factory=dict)  # provider-specific
 
     # ── STFT ──────────────────────────────────────────────────────────────

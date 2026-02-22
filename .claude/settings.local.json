@@ -9,7 +9,11 @@
       "Bash(gh repo create:*)",
       "Bash(gh issue create:*)",
       "Bash(gh issue view:*)",
-      "Bash(.venv/bin/pytest:*)"
+      "Bash(.venv/bin/pytest:*)",
+      "Bash(gh issue edit:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pytest:*)",
+      "Bash(pip install:*)"
     ]
   }
 }

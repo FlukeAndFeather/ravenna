@@ -58,6 +58,7 @@ def test_default_values(minimal_config):
     assert minimal_config.n_workers == 16
     assert minimal_config.chunk_size_frames == 4096
     assert minimal_config.hydrophone_sensitivity_db is None
+    assert minimal_config.filename_timestamp_format is None
     assert minimal_config.source_credentials == {}
 
 
