@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Pipeline intermediates (can be large)
+zarr/
+tiles/
+*.pmtiles
+*.mbtiles
+
+# Test & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

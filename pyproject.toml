@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "ravenna"
+version = "0.1.0"
+description = "Tiled bioacoustic spectrogram viewer — pan and zoom across years of PAM recordings in a browser"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "zarr>=2.16",
+    "soundfile>=0.12",
+    "Pillow>=9.0",
+    "matplotlib>=3.7",
+    "click>=8.1",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+cloud = [
+    "boto3>=1.26",
+    "google-cloud-storage>=2.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[project.scripts]
+ravenna = "cli.main:cli"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
